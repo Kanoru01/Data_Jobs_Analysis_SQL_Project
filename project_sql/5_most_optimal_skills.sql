@@ -17,6 +17,7 @@ WITH demanded_skills AS (
     WHERE 
         job_postings_fact.job_title_short = 'Data Analyst'
         AND job_postings_fact.salary_year_avg IS NOT NULL
+        AND job_work_from_home = True
     GROUP BY 
         skills_dim.skill_id
 ), top_paying_skills AS (
@@ -31,6 +32,7 @@ WITH demanded_skills AS (
     WHERE 
         job_postings_fact.job_title_short = 'Data Analyst'
         AND job_postings_fact.salary_year_avg IS NOT NULL
+        AND job_work_from_home = True
     GROUP BY 
         skills_dim.skill_id
 )
@@ -43,7 +45,11 @@ SELECT
 FROM 
     demanded_skills ds
 INNER JOIN top_paying_skills ps ON ds.skill_id = ps.skill_id
+GROUP BY 
+    ds.skill_id, ds.skills, ds.demand_count, ps.average_salary
+HAVING
+    ds.demand_count > 10
 ORDER BY
     average_salary DESC,
     demand_count DESC
-LIMIT 20;
+LIMIT 25;
